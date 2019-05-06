@@ -12,7 +12,9 @@ public class AlienAI : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float yPos = Speed * Time.deltaTime * -1;
+        float rN = Random.Range(1.0f, 10.0f);
+
+        float yPos = Speed * rN * Time.deltaTime * -1;
         transform.Translate(new Vector3(0, yPos, 0));
         {
             UpdatePercentage();
