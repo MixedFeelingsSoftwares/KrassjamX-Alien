@@ -22,12 +22,10 @@ public class AlienAI : MonoBehaviour
     private void UpdatePercentage()
     {
         Vector3 sPos = Camera.main.WorldToScreenPoint(transform.position);
-        Debug.Log(sPos.y);
         int percentage = (int)((double)sPos.y / (double)Screen.height * (double)100);
         if (percentage >= 0)
         {
             Percentage = percentage;
-            Debug.Log(percentage);
         }
         else
         {

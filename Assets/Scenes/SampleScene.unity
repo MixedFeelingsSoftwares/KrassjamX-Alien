@@ -149,6 +149,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52ad7facdce04db4695f1e85b6a80100, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AlienPrefab: {fileID: 5769447568825346260, guid: d33a7b4bd53fe514c9e411077a095f7a,
+    type: 3}
   Fullscreen: 1
   MaxAliens: 10
   SpawnRate: 1

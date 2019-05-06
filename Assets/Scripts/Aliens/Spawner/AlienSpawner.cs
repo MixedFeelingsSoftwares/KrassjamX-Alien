@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AlienSpawner : MonoBehaviour
 {
+    public GameObject AlienPrefab;
+
     public bool Fullscreen = false;
 
     public int MaxAliens = 10;
@@ -42,15 +44,37 @@ public class AlienSpawner : MonoBehaviour
         Vector3 pos = Camera.main.transform.position;
 
         Gizmos.DrawWireCube(pos, spawnArea);
-    }
 
-    public void SpawnAlien()
-    {
-        var prefab = Resources.Load("Prefabs/Alien") as GameObject;
-        if (prefab)
+        if (aliens != null && aliens.Count > 0)
         {
-            var obj = Instantiate(prefab, transform.position, Quaternion.identity);
-            obj.transform.position = new Vector3(0, (Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0)) * 2).y, 0);
+            for (int i = 0; i < aliens.Count; i++)
+            {
+                var alien = aliens[i];
+                if (alien != null)
+                {
+                    var pos1 = alien.position;
+                    var pos2 = new Vector3(alien.position.x, 0, 0); // TODO
+
+                    Gizmos.DrawLine(pos1, pos2);
+                }
+                else
+                {
+                    aliens.RemoveAt(i);
+                }
+            }
         }
     }
-}
+    private List<Transform> aliens = new List<Transform>();
+    public void SpawnAlien()
+    {
+        if (!AlienPrefab) { return; }
+        int max = MaxAliens;
+        float pos = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0)).x / max;
+
+        float randomXPos = pos * Random.Range(0, max);
+
+        GameObject obj = Instantiate(AlienPrefab, transform.position, Quaternion.identity) as GameObject;
+        obj.transform.position = new Vector3(randomXPos, (Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0))).y, 0);
+        aliens.Add(obj.transform);
+    }
+} 
