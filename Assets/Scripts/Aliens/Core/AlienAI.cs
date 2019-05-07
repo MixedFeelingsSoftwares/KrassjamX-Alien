@@ -12,10 +12,9 @@ public class AlienAI : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float rN = Random.Range(1.0f, 10.0f);
+        float xPos = Speed * Time.deltaTime * -1;
 
-        float yPos = Speed * rN * Time.deltaTime * -1;
-        transform.Translate(new Vector3(0, yPos, 0));
+        transform.Translate(new Vector3(xPos, 0, 0));
         {
             UpdatePercentage();
         }
@@ -24,7 +23,8 @@ public class AlienAI : MonoBehaviour
     private void UpdatePercentage()
     {
         Vector3 sPos = Camera.main.WorldToScreenPoint(transform.position);
-        int percentage = (int)((double)sPos.y / (double)Screen.height * (double)100);
+
+        int percentage = (int)((double)sPos.x / (double)Screen.width * (double)100);
         if (percentage >= 0)
         {
             Percentage = percentage;

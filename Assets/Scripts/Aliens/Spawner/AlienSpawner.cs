@@ -45,7 +45,7 @@ public class AlienSpawner : MonoBehaviour
 
         Vector3 pos = Camera.main.transform.position;
 
-        float vPos = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0)).x / MaxAliens;
+        float vPos = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0)).x;
 
         Vector3 zPos = new Vector3(vPos, (Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0))).y, 0);
 
@@ -82,12 +82,17 @@ public class AlienSpawner : MonoBehaviour
         if (!AlienPrefab) { return; }
         int max = MaxAliens;
 
-        float pos = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0)).x / max;
+        float pos = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0)).y / max;
 
-        float randomXPos = pos * Random.Range(0, max);
+        float randomYpos = pos * Random.Range(0, max);
 
-        GameObject obj = Instantiate(AlienPrefab, transform.position, Quaternion.identity, transform) as GameObject;
-        obj.transform.position = new Vector3(randomXPos, (Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0))).y, 0);
+        float randomPos = Random.Range(-1.0f, 1.0f);
+
+        Vector3 startPos = new Vector3((Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0))).x, randomYpos*randomPos, 0)
+            + (AlienPrefab.GetComponent<SpriteRenderer>().bounds.size / 2);
+
+        GameObject obj = Instantiate(AlienPrefab, startPos, Quaternion.identity, transform) as GameObject;
+
         aliens.Add(obj.transform);
     }
 } 
