@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class AlienSpawner : MonoBehaviour
 {
-    private List<Transform> aliens = new List<Transform>();
+    public static AlienSpawner Instance { get; private set; }
+
+    public List<Transform> aliens = new List<Transform>();
 
     public GameObject AlienPrefab;
 
@@ -21,6 +23,7 @@ public class AlienSpawner : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        Instance = this;
         cTime = Time.time;
         UpdateFullscreen();
     }
