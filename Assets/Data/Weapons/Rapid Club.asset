@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2e54f6dc237fef4ba8290c739687aa5, type: 3}
   m_Name: Rapid Club
   m_EditorClassIdentifier: 
+  EnemyHitParticle: {fileID: 6141675630308634818, guid: db1c9e8674aab7e488f73514bfb39068,
+    type: 3}
   Name: Rapid Club
   Speed: 0.75
   WeaponSprite: {fileID: 21300000, guid: 6a36749995436ca41817dd74c15815cc, type: 3}

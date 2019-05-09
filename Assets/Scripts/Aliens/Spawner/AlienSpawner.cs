@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class AlienSpawner : MonoBehaviour
 {
-    public static AlienSpawner Instance { get; private set; }
+    public GameObject AlienPrefab;
 
     public List<Transform> aliens = new List<Transform>();
 
-    public GameObject AlienPrefab;
+    public AudioClip enemyHitSound;
 
     public bool Fullscreen = false;
 
@@ -18,7 +18,9 @@ public class AlienSpawner : MonoBehaviour
 
     private float cTime { get; set; }
 
-    private Vector3 spawnArea { get;  set; }
+    private Vector3 spawnArea { get; set; }
+
+    public static AlienSpawner Instance { get; private set; }
 
     // Start is called before the first frame update
     private void Start()
@@ -83,19 +85,22 @@ public class AlienSpawner : MonoBehaviour
     public void SpawnAlien()
     {
         if (!AlienPrefab) { return; }
-        int max = MaxAliens;
+        if (aliens.Count < MaxAliens)
+        {
+            int max = MaxAliens;
 
-        float pos = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0)).y / max;
+            float pos = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).y / max;
 
-        float randomYpos = pos * Random.Range(0, max);
+            float randomYpos = pos * Random.Range(0, max);
 
-        float randomPos = Random.Range(-1.0f, 1.0f);
+            float randomPos = Random.Range(-1.0f, 1.0f);
 
-        Vector3 startPos = new Vector3((Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0))).x, randomYpos*randomPos, 0)
-            + (AlienPrefab.GetComponent<SpriteRenderer>().bounds.size / 2);
+            Vector3 startPos = new Vector3((Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0))).x, randomYpos * randomPos, 0)
+                + (AlienPrefab.GetComponent<SpriteRenderer>().bounds.size / 2);
 
-        GameObject obj = Instantiate(AlienPrefab, startPos, Quaternion.identity, transform) as GameObject;
-
-        aliens.Add(obj.transform);
+            GameObject obj = Instantiate(AlienPrefab, startPos, Quaternion.identity, transform) as GameObject;
+            obj.AddComponent<AlienCore>();
+            aliens.Add(obj.transform);
+        }
     }
 } 

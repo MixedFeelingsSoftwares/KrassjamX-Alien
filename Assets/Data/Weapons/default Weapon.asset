@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2e54f6dc237fef4ba8290c739687aa5, type: 3}
   m_Name: default Weapon
   m_EditorClassIdentifier: 
+  bullet_Speed: 5
+  enemyHitAudio: {fileID: 8300000, guid: 19e0618e18f10da4b8f5246985a16fdf, type: 3}
+  EnemyHitParticle: {fileID: 6141675630308634818, guid: db1c9e8674aab7e488f73514bfb39068,
+    type: 3}
+  FireRate: 1
   Name: Default Weapon
-  Speed: 2
+  ShootAudio: {fileID: 8300000, guid: 933c240cc7b2e5643834a7ebc9c087c0, type: 3}
+  WeaponDamage: 50
   WeaponSprite: {fileID: 21300000, guid: 2d486be0bfedcc844bc7e6e12463cd24, type: 3}

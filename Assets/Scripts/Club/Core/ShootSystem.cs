@@ -4,19 +4,35 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+[System.Serializable]
+public class Aim
+{
+    public float X { get; set; }
+
+    public float Y { get; set; }
+}
+
+[RequireComponent(typeof(AudioSource))]
 public class ShootSystem : MonoBehaviour
 {
-    public Transform ProjectieParent;
-    public int currentWeaponIndex;
+    private float temp_ShootTime;
 
     public Aim currentAim = new Aim();
 
     public int currentMaxAliens;
 
+    public int currentWeaponIndex;
+
+    public Transform ProjectieParent;
+
+    public AudioSource source;
+
     public AllWeapons.WeaponData Weapon;
 
     //#1
     public event System.EventHandler<WeaponEventArgs> WeaponChanged;
+
+    public static ShootSystem Instance { get; set; }
 
     public AllWeapons.WeaponData equippedWeapon
     {
@@ -24,6 +40,7 @@ public class ShootSystem : MonoBehaviour
         {
             return Weapon;
         }
+
         set
         {
             if (Weapon != value)
@@ -34,45 +51,35 @@ public class ShootSystem : MonoBehaviour
         }
     }
 
-    public void Shoot()
+    private void checkMoveClubPosition()
     {
-        if (ProjectieParent == null) { ProjectieParent = new GameObject("Projectiles").transform; }
-
-        var cWeapon = equippedWeapon;
-        GameObject obj = new GameObject("Projectile");
-        obj.transform.SetParent(ProjectieParent, true);
-
-        obj.transform.position = transform.position;
-
-        var sp = obj.AddComponent<SpriteRenderer>();
-        sp.sprite = equippedWeapon.weapon.WeaponSprite;
-
-        var ProjCore = obj.AddComponent<ProjectileCore>();
-
-        var collider = obj.AddComponent<BoxCollider2D>();
-
-        collider.size = sp.bounds.size;
-
-        ProjCore.data = cWeapon;
-        ProjCore.Sender = gameObject;
-        
+        if (Input.GetKeyUp(KeyCode.W)) // Up
+        {
+            if (currentAim.Y < (currentMaxAliens - 1))
+            {
+                currentAim.Y++;
+            }
+            else
+            {
+                currentAim.Y = (-currentMaxAliens + 1);
+            }
+        }
+        else if (Input.GetKeyUp(KeyCode.S)) // Down
+        {
+            if (currentAim.Y > (-currentMaxAliens + 1))
+            {
+                currentAim.Y--;
+            }
+            else
+            {
+                currentAim.Y = (currentMaxAliens - 1);
+            }
+        }
     }
 
-
-    public ShootSystem Instance { get; set; }
-    private void UpdateClubPosition()
+    private void FixedUpdate()
     {
-        if (AlienSpawner.Instance == null) { return; }
-
-        int TotalAliens = AlienSpawner.Instance.MaxAliens;
-        currentMaxAliens = TotalAliens;
-        Vector3 bounds = GetComponent<SpriteRenderer>().bounds.size;
-        Vector3 CameraPos = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0)) + (bounds / 2);
-
-        float tW = CameraPos.y / TotalAliens;
-
-        currentAim.X = CameraPos.x;
-        transform.position = new Vector3(CameraPos.x, (tW * currentAim.Y), transform.position.z);
+        UpdateClubPosition();
     }
 
     private void ShootSystem_WeaponChanged(object sender, WeaponEventArgs e)
@@ -84,6 +91,8 @@ public class ShootSystem : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        source = transform.GetComponent<AudioSource>();
+
         WeaponChanged += ShootSystem_WeaponChanged;
         if (AllWeapons.Instance.Weapons.Count > 0)
         {
@@ -100,33 +109,40 @@ public class ShootSystem : MonoBehaviour
         checkIfShoot();
     }
 
-    private void FixedUpdate()
+    private void UpdateClubPosition()
     {
-        UpdateClubPosition();
+        if (AlienSpawner.Instance == null) { return; }
+
+        int TotalAliens = AlienSpawner.Instance.MaxAliens;
+        currentMaxAliens = TotalAliens;
+        Vector3 bounds = GetComponent<SpriteRenderer>().bounds.size;
+        Vector3 CameraPos = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0)) + (bounds / 2);
+
+        float tW = CameraPos.y / TotalAliens;
+
+        currentAim.X = CameraPos.x;
+        transform.position = new Vector3(CameraPos.x, (tW * currentAim.Y), transform.position.z);
+    }
+
+    //#2
+    protected virtual void OnWeaponChanged(AllWeapons.WeaponData data)
+    {
+        if (WeaponChanged != null) WeaponChanged(this, new WeaponEventArgs() { WeaponData = data });
+    }
+
+    public void Awake()
+    {
+        Instance = this;
     }
 
     public void checkIfShoot()
     {
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
         {
-            Shoot();
-        }
-    }
-
-    private void checkMoveClubPosition()
-    {
-        if (Input.GetKeyUp(KeyCode.W)) // Up
-        {
-            if (currentAim.Y < (currentMaxAliens - 1))
+            if (temp_ShootTime <= Time.time)
             {
-                currentAim.Y++;
-            }
-        }
-        else if (Input.GetKeyUp(KeyCode.S)) // Down
-        {
-            if (currentAim.Y > (-currentMaxAliens + 1))
-            {
-                currentAim.Y--;
+                temp_ShootTime = Time.time + equippedWeapon.weapon.FireRate;
+                Shoot();
             }
         }
     }
@@ -168,10 +184,28 @@ public class ShootSystem : MonoBehaviour
         }
     }
 
-    //#2
-    protected virtual void OnWeaponChanged(AllWeapons.WeaponData data)
+    public void Shoot()
     {
-        if (WeaponChanged != null) WeaponChanged(this, new WeaponEventArgs() { WeaponData = data });
+        if (ProjectieParent == null) { ProjectieParent = new GameObject("Projectiles").transform; }
+
+        var cWeapon = equippedWeapon;
+        GameObject obj = new GameObject("Projectile");
+
+        var ProjCore = obj.AddComponent<ProjectileCore>();
+
+        ProjCore.data = cWeapon;
+        ProjCore.Sender = gameObject;
+
+        obj.transform.SetParent(ProjectieParent, true);
+
+        obj.transform.position = transform.position;
+
+        var sp = obj.AddComponent<SpriteRenderer>();
+        sp.sprite = equippedWeapon.weapon.WeaponSprite;
+        if (cWeapon.weapon.ShootAudio != null)
+        {
+            source.PlayOneShot(cWeapon.weapon.ShootAudio);
+        }
     }
 
     public void UpdateClubSprite()
@@ -192,14 +226,6 @@ public class ShootSystem : MonoBehaviour
             renderer.sprite = equippedWeapon.weapon.WeaponSprite;
         }
     }
-}
-
-[System.Serializable]
-public class Aim
-{
-    public float X { get; set; }
-
-    public float Y { get; set; }
 }
 
 public class WeaponEventArgs : EventArgs
