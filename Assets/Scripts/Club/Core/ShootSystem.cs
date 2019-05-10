@@ -137,13 +137,10 @@ public class ShootSystem : MonoBehaviour
 
     public void checkIfShoot()
     {
-        if (Input.GetKey(KeyCode.Space))
+        if (temp_ShootTime <= Time.time)
         {
-            if (temp_ShootTime <= Time.time)
-            {
-                temp_ShootTime = Time.time + equippedWeapon.weapon.FireRate;
-                Shoot();
-            }
+            temp_ShootTime = Time.time + equippedWeapon.weapon.FireRate;
+            Shoot();
         }
     }
 

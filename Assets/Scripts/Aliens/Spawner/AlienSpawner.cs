@@ -48,18 +48,6 @@ public class AlienSpawner : MonoBehaviour
     {
         if (spawnArea == Vector3.zero) { return; }
 
-        Vector3 pos = Camera.main.transform.position;
-
-        float vPos = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0)).x;
-
-        Vector3 zPos = new Vector3(vPos, (Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0))).y, 0);
-
-        Gizmos.color = new Color(255, 0, 0);
-        Gizmos.DrawWireCube(transform.position, zPos);
-
-        Gizmos.color = new Color(255, 255, 255);
-        Gizmos.DrawWireCube(pos, spawnArea);
-
         if (aliens != null && aliens.Count > 0)
         {
             for (int i = 0; i < aliens.Count; i++)
@@ -67,10 +55,10 @@ public class AlienSpawner : MonoBehaviour
                 var alien = aliens[i];
                 if (alien != null)
                 {
-                    var CameraPos = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0));
+                    var CameraPos = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0));
 
                     var pos1 = alien.position;
-                    var pos2 = new Vector3(alien.position.x, CameraPos.y, 0); // TODO
+                    var pos2 = new Vector3(CameraPos.x, alien.position.y, alien.transform.position.z); // TODO
 
                     Gizmos.DrawLine(pos1, pos2);
                 }

@@ -63,6 +63,7 @@ public class ProjectileCore : MonoBehaviour
                         var cCore = container.transform.GetComponent<AlienCore>();
                         if (cCore != null)
                         {
+                            container.transform.GetComponent<Animator>().SetTrigger("Hit");
                             cCore.Hit(data.weapon.WeaponDamage, data.weapon.enemyHitAudio, new Action<GameObject>((x) =>
                             {
                                 RunEnemyHitExplosion(x.transform);
